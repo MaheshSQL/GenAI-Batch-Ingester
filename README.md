@@ -26,7 +26,7 @@ Current version support PDF file ingestion.
 
 Template file is included which can be renamed to local.settings.json and configuration values need to be updated in this file.
 
-| App Setting | Explanation | Example Value | Note |
+| App Setting |                Explanation                | Example Value |       Note       |
 | --- | ------------- | --- | --- |
 |BLOB_STORAGE_ACCOUNT_UPLOAD_CONTAINER_NAME|Storage container where files to be ingested are added|upload|Please ensure the uploaded files follow 2 level hierarchy system / username --> batch_id e.g. system --> 202404161240 Please add new set of documents with a new batch_id 202404161240, this will help track progress of each document set.|
 |BLOB_STORAGE_ACCOUNT_LOG_CONTAINER_NAME||logs|Not required|
