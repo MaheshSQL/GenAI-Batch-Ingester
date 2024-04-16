@@ -8,7 +8,7 @@ This pattern provides a versatile framework that can be adapted to various scena
 
 Current version supports PDF file ingestion.
 
-![](docs/images/architecture.png)
+![](docs/images/architecture2.png)
 
 ## Running in Dev Container
 
