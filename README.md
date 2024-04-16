@@ -6,7 +6,7 @@ This pattern is built upon the robust foundation provided by Azure Cloud service
 
 This pattern provides a versatile framework that can be adapted to various scenarios, including the extension into vectorization and ingestion into vector stores, such as the Azure AI Search service.
 
-Current version support PDF file ingestion.
+Current version supports PDF file ingestion.
 
 ![](docs/images/architecture.png)
 
