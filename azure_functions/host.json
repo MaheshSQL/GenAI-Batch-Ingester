@@ -1,0 +1,30 @@
+{
+  "version": "2.0",
+  "logging": {
+    "applicationInsights": {
+      "samplingSettings": {
+        "isEnabled": true,
+        "excludedTypes": "Request"
+      }
+    }
+  },
+  "extensionBundle": {
+    "id": "Microsoft.Azure.Functions.ExtensionBundle",
+    "version": "[3.*, 4.0.0)"
+  },
+  "extensions": {
+    "blobs": {
+      "maxDegreeOfParallelism": 5,
+      "poisonBlobThreshold": 3
+    },
+    "queues": {
+      "batchSize": 5,
+      "maxDequeueCount": 3
+    }
+  },
+  "concurrency": {
+    "dynamicConcurrencyEnabled": false,
+    "snapshotPersistenceEnabled": false
+  },
+  "functionTimeout": "02:00:00"
+}
