@@ -15,6 +15,7 @@ Current version support PDF file ingestion.
 - Clone this repository and open in VS code container
 - Provision Azure services
   - Azure Storage Account
+    - 2 containers and 3 queues
   - Azure CosmosDB
   - Azure OpenAI Service
   - Azure Function App (not required unless deploying to Azure)

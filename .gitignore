@@ -389,4 +389,4 @@ packages-microsoft*
 app/enrichment/shared_code
 
 README_*.md
-azure_functions/local.settings.json
+local.settings.json
