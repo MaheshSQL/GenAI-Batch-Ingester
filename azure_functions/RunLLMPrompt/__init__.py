@@ -210,7 +210,7 @@ def main(msg: func.QueueMessage) -> None:
             # unexpected status returned by FR, such as internal capacity overload, so requeue
             if chunk_queued_count < max_submit_requeue_count:
                 # statusLog.upsert_document(blob_name, f'{function_name} - 429 response from Azure OpenAI endpoint - code: {response.status_code}, response.content: {response.content}. Request will be resubmitted', StatusClassification.ERROR)                  
-                queue_client = QueueClient.from_connection_string(azure_blob_connection_string, pdf_submit_queue, message_encode_policy=TextBase64EncodePolicy())  
+                queue_client = QueueClient.from_connection_string(azure_blob_connection_string, chunks_queue, message_encode_policy=TextBase64EncodePolicy())  
                 chunk_queued_count += 1
                 message_json["chunk_queued_count"] = chunk_queued_count
                 message_string = json.dumps(message_json)    
