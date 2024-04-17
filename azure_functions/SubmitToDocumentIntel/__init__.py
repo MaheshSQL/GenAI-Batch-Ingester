@@ -83,16 +83,19 @@ def main(msg: func.QueueMessage) -> None:
         )
         logging.info("Generated BLOB SAS")
 
+        # Retrieve a random endpoint to spread the workload across multiple deployments
+        idx, doc_intel_endpoint_list, doc_intel_key_list = utilities.get_document_intel_endpoint(endpoint, FR_key)
+
         # Construct and submmit the message to FR
         headers = {
             "Content-Type": "application/json",
-            "Ocp-Apim-Subscription-Key": FR_key,
+            "Ocp-Apim-Subscription-Key": doc_intel_key_list[idx],
         }
 
         params = {"api-version": api_version}
 
         body = {"urlSource": blob_path_plus_sas}
-        url = f"{endpoint}formrecognizer/documentModels/{FR_MODEL}:analyze"
+        url = f"{doc_intel_endpoint_list[idx]}formrecognizer/documentModels/{FR_MODEL}:analyze"
 
         statusLog.upsert_document(
             blob_path,
@@ -115,6 +118,7 @@ def main(msg: func.QueueMessage) -> None:
             )
             result_id = response.headers.get("apim-request-id")
             message_json["FR_resultId"] = result_id
+            message_json["FR_API_List_idx"] = idx # New. To ensure same API gets used while polling in next function
             message_json["polling_queue_count"] = 1
             queue_client = QueueClient.from_connection_string(
                 azure_blob_connection_string,

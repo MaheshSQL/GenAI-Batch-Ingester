@@ -19,6 +19,7 @@ class State(Enum):
     ERROR = "Error"
     THROTTLED = "Throttled"
     UPLOADED = "Uploaded"
+    CONTENT_FILTER = "Content_Filter"    
     ALL = "All"
 
 class StatusClassification(Enum):

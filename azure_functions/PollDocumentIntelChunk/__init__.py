@@ -75,21 +75,25 @@ def main(msg: func.QueueMessage) -> None:
         blob_name =  message_json['blob_name']
         blob_uri =  message_json['blob_uri']
         FR_resultId = message_json['FR_resultId']
+        idx_submitted = message_json["FR_API_List_idx"] # New. To ensure same API gets used while polling in next function
         queued_count = message_json['polling_queue_count']      
         submit_queued_count = message_json["submit_queued_count"]
         prompt_id = message_json["prompt_id"] # New
         statusLog.upsert_document(blob_name, f'{function_name} - Message received from pdf polling queue attempt {queued_count}', StatusClassification.DEBUG, State.PROCESSING)        
         statusLog.upsert_document(blob_name, f'{function_name} - Polling Form Recognizer function started', StatusClassification.INFO)
         
+        # Retrieve a random endpoint to spread the workload across multiple deployments
+        idx, doc_intel_endpoint_list, doc_intel_key_list = utilities.get_document_intel_endpoint(endpoint, FR_key)
+
         # Construct and submmit the polling message to FR
         headers = {
-            'Ocp-Apim-Subscription-Key': FR_key
+            'Ocp-Apim-Subscription-Key': doc_intel_key_list[idx_submitted]
         }
 
         params = {
             'api-version': api_version
         }
-        url = f"{endpoint}formrecognizer/documentModels/{FR_MODEL}/analyzeResults/{FR_resultId}"
+        url = f"{doc_intel_endpoint_list[idx_submitted]}formrecognizer/documentModels/{FR_MODEL}/analyzeResults/{FR_resultId}"
         
         # retry logic to handle 'Connection broken: IncompleteRead' errors, up to n times
      

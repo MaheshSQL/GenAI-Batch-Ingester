@@ -13,6 +13,10 @@ from shared_code.utilities_helper import UtilitiesHelper
 from nltk.tokenize import sent_tokenize
 import tiktoken
 import nltk
+
+import time
+import random
+
 # Try to download using nltk.download
 nltk.download('punkt')
 from bs4 import BeautifulSoup
@@ -885,4 +889,57 @@ class Utilities:
                                       )
         
         return [self.azure_blob_content_storage_container + '/' + blob_child_path, 
-                f'{self.azure_blob_storage_endpoint}{self.azure_blob_content_storage_container}/{blob_child_path}']        
+                f'{self.azure_blob_storage_endpoint}{self.azure_blob_content_storage_container}/{blob_child_path}'] 
+
+    # New
+    # For both chat completion and embedding enpoint use
+    def get_aoai_endpoint(self, endpoint, key, deployment_id):
+        '''Simple distribution of calls to given list of endpoints.
+        When single endpoint given, always returns same endpoint / key / deployment id combination.
+        When given delimited list (pipe | separated), returns randomly picked combination of endpoint / key / deployment id.
+
+        Can be given chat completion or embedding model endpoints.
+        '''
+
+        # Convert delimted values to lists
+        endpoint_list = [e for e in endpoint.split('|') if e != '']
+        key_list = [k for k in key.split('|') if k != '']
+        deployment_id_list = [d for d in deployment_id.split('|') if d != '']
+        
+        assert len(endpoint_list) == len(key_list) and  len(key_list) == len(deployment_id_list)    
+        
+        # Get the current time  
+        now = datetime.now()  
+
+        # Use microseconds for a higher resolution if available, otherwise fallback to seconds  
+        current_microsecond = now.microsecond if hasattr(now, 'microsecond') else now.second * 1000000  
+
+        # Calculate the index using modulo operation  
+        index = current_microsecond % len(endpoint_list)  
+
+        return endpoint_list[index], key_list[index], deployment_id_list[index]
+
+    # New
+    def get_document_intel_endpoint(self, endpoint, key):
+        '''Simple distribution of calls to given list of endpoints.
+        When single endpoint given, always returns same endpoint / key combination.
+        When given delimited list (pipe | separated), returns randomly picked combination of endpoint / key.
+        
+        '''
+
+        # Convert delimted values to lists
+        endpoint_list = [e for e in endpoint.split('|') if e != '']
+        key_list = [k for k in key.split('|') if k != '']        
+        
+        assert len(endpoint_list) == len(key_list)
+        
+        # Get the current time  
+        now = datetime.now()  
+
+        # Use microseconds for a higher resolution if available, otherwise fallback to seconds  
+        current_microsecond = now.microsecond if hasattr(now, 'microsecond') else now.second * 1000000  
+
+        # Calculate the index using modulo operation  
+        index = current_microsecond % len(endpoint_list)  
+
+        return index, endpoint_list, key_list

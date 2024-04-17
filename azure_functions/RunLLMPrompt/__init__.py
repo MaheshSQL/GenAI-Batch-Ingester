@@ -43,7 +43,7 @@ non_pdf_submit_queue = os.environ["NON_PDF_SUBMIT_QUEUE"]
 pdf_polling_queue = os.environ["PDF_POLLING_QUEUE"]
 pdf_submit_queue = os.environ["PDF_SUBMIT_QUEUE"]
 # text_enrichment_queue = os.environ["TEXT_ENRICHMENT_QUEUE"]
-endpoint = os.environ["AZURE_FORM_RECOGNIZER_ENDPOINT"]
+# endpoint = os.environ["AZURE_FORM_RECOGNIZER_ENDPOINT"]
 FR_key = os.environ["AZURE_FORM_RECOGNIZER_KEY"]
 api_version = os.environ["FR_API_VERSION"]
 max_submit_requeue_count = int(os.environ["MAX_SUBMIT_REQUEUE_COUNT"])
@@ -132,12 +132,13 @@ def main(msg: func.QueueMessage) -> None:
         # Retrieve merged chunk from the blob
         # print(f'chunk_blob_uri:{chunk_blob_uri}')
 
-        input_text = "" # TO DO
+        input_text = ""
         blob_content = ""
         blob_content_json = {}
 
         blob_content = utilities.read_blob_content(chunk_name, chunk_blob_uri).decode('utf-8') # Decoding the byte string
         # print(f'blob_content:{blob_content}')
+        # statusLog.create_chunk_log_entry(blob_name,chunk_blob_uri,chunk_name,State.PROCESSING, f'{function_name} - BLOB content read')
 
         blob_content_json = json.loads(blob_content)
         # print(f'blob_content_json:{blob_content_json}')
@@ -146,13 +147,17 @@ def main(msg: func.QueueMessage) -> None:
         # print(f'input_text:{input_text}')
 
         # Submit request to AOAI chat completion endpoint (REST)
+        # Retrieve a random endpoint to spread the workload across multiple deployments
+        aoai_endpoint, aoai_key, aoai_deployment_id = utilities.get_aoai_endpoint(azure_openai_endpoint, azure_openai_key, azure_openai_deployment_id)
 
         # Expected format: https://{your-resource-name}.openai.azure.com/openai/deployments/{deployment-id}/chat/completions?api-version={api-version}
-        endpoint = f'{azure_openai_endpoint}/openai/deployments/{azure_openai_deployment_id}/chat/completions?api-version={azure_openai_api_version}'
+        # endpoint = f'{azure_openai_endpoint}/openai/deployments/{azure_openai_deployment_id}/chat/completions?api-version={azure_openai_api_version}'
+        endpoint = f'{aoai_endpoint}/openai/deployments/{aoai_deployment_id}/chat/completions?api-version={azure_openai_api_version}'
+        # statusLog.create_chunk_log_entry(blob_name,chunk_blob_uri,chunk_name,State.PROCESSING, f'{function_name} - AOAI endpoint details retrieved')
 
         headers = {  
             "Content-Type": "application/json",  
-            "api-key": azure_openai_key
+            "api-key": aoai_key
             }  
         
         data = {
@@ -169,13 +174,15 @@ def main(msg: func.QueueMessage) -> None:
 
         response = requests.post(endpoint, headers=headers, json=data)
         # print(f'response.status_code:{response.status_code}')
-        # print(f'response:{response.content}')        
+        # print(f'response:{response.content}')
+        # statusLog.create_chunk_log_entry(blob_name,chunk_blob_uri,chunk_name,State.PROCESSING, f'{function_name} - request submitted to AOAI')        
 
         # Success
         if response.status_code == 200:
             response_json = response.json()
             # print(f'response_json:{response_json}')
             # print(f'response_json["choices"][0]:{response_json["choices"][0]}')            
+            # statusLog.create_chunk_log_entry(blob_name,chunk_blob_uri,chunk_name,State.PROCESSING, f'{function_name} - status_code 200. response_json:{response_json}')
 
             if response_json["choices"][0]["finish_reason"] == 'stop':
                 llm_output = response_json["choices"][0]["message"]["content"]
@@ -203,7 +210,10 @@ def main(msg: func.QueueMessage) -> None:
 
             elif response_json["choices"][0]["finish_reason"] == 'content_filter':
                 # statusLog.upsert_document(blob_name, f"{function_name} - An error occurred, AOAI returned status code {response.status_code} with finish_reason = content_filter, input_text: {input_text}, response: {str(response.content)}", StatusClassification.DEBUG, State.PROCESSING)
-                statusLog.create_chunk_log_entry(blob_name,chunk_blob_uri,chunk_name,State.SKIPPED, f'{function_name} - content_filter')
+                statusLog.create_chunk_log_entry(blob_name,chunk_blob_uri,chunk_name,State.CONTENT_FILTER, f'{function_name} - content_filter')
+
+            else: # Other finish reason e.g. length
+                statusLog.create_chunk_log_entry(blob_name,chunk_blob_uri,chunk_name,State.SKIPPED, f'{function_name} - Please review respone. response_json:{response_json}')
 
         # Re-queue
         elif response.status_code == 429:
