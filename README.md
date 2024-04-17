@@ -12,8 +12,8 @@ __Caution__
 
 - Do not run directly on 1000s of documents.
 - Get this solution working locally through Azure Function Core tools as the first step.
-- Run on a very small set (1-2) of smaller documents (< 10 pages>) first.
-- This pattern assumes incremental addtion of new document batch and track progress one batch at a time.
+- Run on a very small set (1-2) of smaller documents (< 10 pages) first.
+- This pattern assumes incremental addition of new document batch and track progress one batch at a time.
 - Incorrect configuration, updates to the code may lead to unexpected Azure bill.
 
 ![](docs/images/architecture.png)
@@ -41,7 +41,10 @@ Template file is included which can be renamed to local.settings.json and config
 
 Please note that the solution supports single or multiple Azure OpenAI and Document Intelligence endpoints to spread calls across them.
 For using multiple endpoints, please separate the values using pipe '|' delimiter.
-This includes keys and deployment names. Example below.
+This includes keys and deployment names.
+
+Example below.
+
 "AZURE_OPENAI_DEPLOYMENT_ID": "gpt-35-turbo-1106|gpt-35-turbo-0613|gpt-35-turbo-0125"
 
 | App Setting : Explanation | Example Value |       Note       |
