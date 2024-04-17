@@ -54,7 +54,7 @@ Template file is included which can be renamed to local.settings.json and config
 |FR_API_VERSION : Document Intelligence API version|2023-07-31|This repo uses prebuilt-layout model offered by Document Intelligence|
 |TARGET_PAGES||Not required|
 |TARGET_TRANSLATION_LANGUAGE||Not required|
-|FUNCTIONS_WORKER_RUNTIME||Not required|
+|FUNCTIONS_WORKER_RUNTIME|python||
 |AzureWebJobs.parse_html_w_form_rec.Disabled|true|Not required|
 |MAX_SECONDS_HIDE_ON_UPLOAD : Random seconds between 1 and this value that sets first time visibility of message to the queue|10||
 |MAX_SUBMIT_REQUEUE_COUNT : Requeue message until these many occurences are exhausted|10||
@@ -88,4 +88,4 @@ Template file is included which can be renamed to local.settings.json and config
 |AZURE_OPENAI_TEMPERATURE : Temperature|0||
 |AZURE_OPENAI_TOP_P : Top P|0.95||
 |AZURE_OPENAI_MAX_TOKENS : Maximum Tokens|200||
-|AZURE_OPENAI_SYSTEM_MESSAGE : System Message|You are AI assistant. Do not make up facts||
+|AZURE_OPENAI_SYSTEM_MESSAGE : System Message|You are AI assistant. Do not make up facts.||

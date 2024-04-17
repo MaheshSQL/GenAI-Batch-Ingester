@@ -18,7 +18,7 @@
       "poisonBlobThreshold": 3
     },
     "queues": {
-      "batchSize": 5,
+      "batchSize": 2,
       "maxDequeueCount": 3
     }
   },
