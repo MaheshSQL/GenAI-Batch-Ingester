@@ -15,13 +15,17 @@ Current version supports PDF file ingestion.
 - Clone this repository and open in VS code container
 - Provision Azure services
   - Azure Storage Account
-    - 2 containers and 3 queues
+    - 2 containers and 4 queues (Please refer storage setup shown below)
   - Azure CosmosDB
   - Azure OpenAI Service
-  - Azure Function App (not required unless deploying to Azure)
-  - You will have to create Python virtual environment and install packages given in requirements.txt file before running `func start` command. Scripts to install miniconda are available in ./azure_functions/scripts directory.
+  - Azure Function App [Python 3.10] (not required unless deploying to Azure)
+  - You will have to create Python virtual environment and install packages given in requirements.txt file before running `func start` command. Scripts to install miniconda are available in ./azure_functions/scripts directory. Run these scripts / code in bash.
 - Renamed to template_local.settings.json file to local.settings.json
 - Update values / keys in local.settings.json
+
+## Storage Setup
+
+![](docs/images/storage_setup.png)
 
 ## Azure Functions
 
@@ -89,3 +93,15 @@ Template file is included which can be renamed to local.settings.json and config
 |AZURE_OPENAI_TOP_P : Top P|0.95||
 |AZURE_OPENAI_MAX_TOKENS : Maximum Tokens|200||
 |AZURE_OPENAI_SYSTEM_MESSAGE : System Message|You are AI assistant. Do not make up facts.||
+
+## Deploy Azure Functions
+
+Open terminal in VSCode where you have opened this project as a dev container
+
+`az login --tenant <TENANT_ID>`
+
+`az account set --subscription <SUBSCRIPTION_ID>`
+
+`cd azure_functions`
+
+`func azure functionapp publish <NAME_OF_YOUR_FUNCTION_APP> --publish-local-settings`
