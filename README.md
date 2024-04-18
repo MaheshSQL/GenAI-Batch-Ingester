@@ -121,3 +121,28 @@ Open terminal in VSCode where you have opened this project as a dev container
 `cd azure_functions`
 
 `func azure functionapp publish <NAME_OF_YOUR_FUNCTION_APP> --publish-local-settings`
+
+## Reviewing Processing Logs
+
+Each chunk's processing is logged into CosmosDB and handy to review process completion status / troubleshoot / benchmark processing performance.
+Below CosmosDB NOSQL queries can help with this.
+
+--merged_chunks processed so far
+
+`SELECT  VALUE COUNT(1) FROM    c
+WHERE      c.doc_type = 'chunk_log' and    c.chunk_state  = 'Complete'`
+
+--merged_chunks with errors
+
+`SELECT  * FROM    c
+WHERE      c.doc_type = 'chunk_log' and    c.chunk_state  = 'Error'`
+
+--merged_chunks that were Throttled
+
+`SELECT  * FROM    c
+WHERE      c.doc_type = 'chunk_log' and    c.chunk_state  = 'Throttled'`
+
+--merged_chunks that were Skipped due to any other reasons / unexpected response from LLM API
+
+`SELECT  * FROM    c
+WHERE      c.doc_type = 'chunk_log' and    c.chunk_state  = 'Skipped'`
