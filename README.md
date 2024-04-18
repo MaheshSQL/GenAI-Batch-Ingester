@@ -16,7 +16,7 @@ __Caution__
 - This pattern assumes incremental addition of new document batch and track progress one batch at a time.
 - Incorrect configuration, updates to the code may lead to unexpected Azure bill.
 
-![](docs/images/architecture.png)
+![](docs/images/architecture_api_spread.png)
 
 ## Running in Dev Container
 
